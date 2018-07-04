@@ -1,0 +1,36 @@
+{
+  "name": "@gen-tech/sticky",
+  "version": "0.0.0",
+  "description": "Library to track DOM element position on the browser",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "homepage": "https://gen-tech.github.io/sticky",
+  "scripts": {
+    "prepare": "tsc",
+    "document": "typedoc --out docs --excludeNotExported --excludePrivate --disableOutputCheck --gitRevision master --exclude \"**/+(as-proto|as-static)/**/*ts\"",
+    "prepare-github-pages": "npm run document && echo \"\" > ./docs/.nojekyll"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gen-tech/sticky.git"
+  },
+  "keywords": [
+    "sticky",
+    "web",
+    "component",
+    "element",
+    "scroll"
+  ],
+  "author": "alisahinozcelik@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gen-tech/sticky/issues"
+  },
+  "devDependencies": {
+    "typedoc": "^0.11.1",
+    "typescript": "^2.9.2",
+    "update-json": "^1.0.0"
+  },
+  "dependencies": {
+  }
+}
