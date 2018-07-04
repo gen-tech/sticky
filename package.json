@@ -1,7 +1,7 @@
 {
   "name": "@gen-tech/sticky",
   "version": "0.0.0",
-  "description": "Library to track DOM element position on the browser",
+  "description": "Sticky Web Component",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "homepage": "https://gen-tech.github.io/sticky",
@@ -31,6 +31,5 @@
     "typescript": "^2.9.2",
     "update-json": "^1.0.0"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
