@@ -8,3 +8,6 @@ docs/
 # Testing
 .nyc_output/
 coverage/
+
+# Misc
+example/

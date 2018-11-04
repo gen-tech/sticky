@@ -7,6 +7,7 @@
   "homepage": "https://gen-tech.github.io/sticky",
   "scripts": {
     "prepare": "tsc",
+    "serve": "tsc -p ./tsconfig.dev.json",
     "document": "typedoc --out docs --excludeNotExported --excludePrivate --disableOutputCheck --gitRevision master --exclude \"**/+(as-proto|as-static)/**/*ts\"",
     "prepare-github-pages": "npm run document && echo \"\" > ./docs/.nojekyll"
   },
@@ -27,9 +28,13 @@
     "url": "https://github.com/gen-tech/sticky/issues"
   },
   "devDependencies": {
+    "tslib": "^1.9.3",
     "typedoc": "^0.11.1",
     "typescript": "^2.9.2",
     "update-json": "^1.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@gen-tech/resize-manager": "^0.1.4",
+    "@gen-tech/scroll-manager": "^0.2.1"
+  }
 }
