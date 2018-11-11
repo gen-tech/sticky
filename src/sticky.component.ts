@@ -1,5 +1,4 @@
-import { ResizeManager } from "@gen-tech/resize-manager";
-import { ScrollManager } from "@gen-tech/scroll-manager";
+import { PositionTracker } from "@gen-tech/position-tracker";
 
 import { nearestParent } from './utils/nearest-parent';
 
@@ -10,8 +9,7 @@ const Warnings = {
   DOES_NOT_HAVE_CONTAINER:  `Element does not have container, please add ${PARENT_ATTRIBURE} attribute to its parent`,
 }
 
-const resizeManager = new ResizeManager();
-const scrollManager = new ScrollManager();
+const tracker = new PositionTracker();
 
 export class StickyComponent extends HTMLElement {
   private parent: HTMLElement = nearestParent(this, `[${PARENT_ATTRIBURE}]`);
@@ -27,9 +25,6 @@ export class StickyComponent extends HTMLElement {
       console.warn(Warnings.NOT_DIRECT_CHILD_OF_THE_PARENT);
     }
 
-    resizeManager.root.resize.subscribe(console.log);
-    scrollManager.root.scroll.subscribe(console.log);
-
-    console.log(this);
+    tracker.trackElement(this.parent).subscribe(console.log);
   }
 }

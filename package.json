@@ -6,8 +6,8 @@
   "typings": "dist/index.d.ts",
   "homepage": "https://gen-tech.github.io/sticky",
   "scripts": {
-    "prepare": "tsc",
-    "serve": "tsc -p ./tsconfig.dev.json",
+    "prepare": "gtvu $TRAVIS_TAG && tsc",
+    "serve": "gulp serve",
     "document": "typedoc --out docs --excludeNotExported --excludePrivate --disableOutputCheck --gitRevision master --exclude \"**/+(as-proto|as-static)/**/*ts\"",
     "prepare-github-pages": "npm run document && echo \"\" > ./docs/.nojekyll"
   },
@@ -28,13 +28,20 @@
     "url": "https://github.com/gen-tech/sticky/issues"
   },
   "devDependencies": {
+    "@gen-tech/version-update": "^0.1.2",
+    "browserify": "^16.2.3",
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-replace": "^1.0.0",
+    "gulp-webserver": "^0.9.1",
+    "tsify": "^4.0.0",
     "tslib": "^1.9.3",
     "typedoc": "^0.11.1",
     "typescript": "^2.9.2",
-    "update-json": "^1.0.0"
+    "vinyl-buffer": "^1.0.1",
+    "vinyl-source-stream": "^2.0.0"
   },
   "dependencies": {
-    "@gen-tech/resize-manager": "^0.1.4",
-    "@gen-tech/scroll-manager": "^0.2.1"
+    "@gen-tech/position-tracker": "^0.1.0"
   }
 }
