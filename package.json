@@ -6,7 +6,7 @@
   "typings": "dist/index.d.ts",
   "homepage": "https://gen-tech.github.io/sticky",
   "scripts": {
-    "prepare": "gtvu $TRAVIS_TAG && tsc",
+    "prepublishOnly": "gtvu $TRAVIS_TAG && tsc",
     "serve": "gulp serve",
     "document": "typedoc --out docs --excludeNotExported --excludePrivate --disableOutputCheck --gitRevision master --exclude \"**/+(as-proto|as-static)/**/*ts\"",
     "prepare-github-pages": "npm run document && echo \"\" > ./docs/.nojekyll"
@@ -42,6 +42,7 @@
     "vinyl-source-stream": "^2.0.0"
   },
   "dependencies": {
-    "@gen-tech/position-tracker": "^0.1.0"
+    "@gen-tech/position-tracker": "^0.1.0",
+    "rxjs": "^6.3.3"
   }
 }
