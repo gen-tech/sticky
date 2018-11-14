@@ -2,12 +2,14 @@ node_modules/
 docs/
 .vscode/
 src/
+playground/
 *.tgz
 package-lock.json
 
 .editorconfig
 tslint.json
 .travis.yml
+gulpfile.js
 
 # Testing
 .nyc_output/

@@ -3,14 +3,10 @@ import { Subject, combineLatest, Subscription } from 'rxjs';
 import { map, filter, distinctUntilChanged, startWith } from "rxjs/operators";
 
 import { StickPosition } from './models/sticky-event.enum';
-import { __POSITION_TRACKER, __TEMPLATE_ELEMENT, __subscriptions } from './private.selectors';
+import { Attributes } from "./models/observed-attributes.type";
+import { __POSITION_TRACKER, __TEMPLATE_ELEMENT, __subscriptions, __offsetTop, __offsetBottom } from './private-selectors';
 import { TEMPLATE } from './sticky.template';
 import { elementBuilder } from './utils/element-builder';
-
-/**
- * Observed Attribute types
- */
-type Attributes = 'offset-top' | 'offset-bottom';
 
 /**
  * Sticky Web Component
@@ -27,13 +23,21 @@ export class StickyComponent extends HTMLElement {
    * Warnings
    */
   public static WARNINGS = {
-
   };
 
+  /**
+   * Position Tracker Singleton Instance
+   */
   private static readonly [__POSITION_TRACKER] = new PositionTracker(0);
 
+  /**
+   * Template Element to clone for each sticky element
+   */
   private static readonly [__TEMPLATE_ELEMENT] = elementBuilder('template', TEMPLATE);
 
+  /**
+   * Container element which wraps sticky content
+   */
   public container: HTMLDivElement;
 
   /**
@@ -42,7 +46,7 @@ export class StickyComponent extends HTMLElement {
   protected _attributeChange$ = new Subject<{name: Attributes, value: string}>();
 
   /**
-   * Offset Top
+   * Offset Top Observable
    */
   protected _offsetTop$ = this._attributeChange$.pipe(
     filter(({name}) => name === 'offset-top'),
@@ -52,7 +56,7 @@ export class StickyComponent extends HTMLElement {
   );
 
   /**
-   * Offset Bottom
+   * Offset Bottom Observable
    */
   protected _offsetBottom$ = this._attributeChange$.pipe(
     filter(({name}) => name === 'offset-bottom'),
@@ -81,22 +85,40 @@ export class StickyComponent extends HTMLElement {
     distinctUntilChanged()
   );
 
+  /**
+   * A container subscription stores all subscriptions to unsubscribe when component destructures
+   */
   private [__subscriptions] = new Subscription();
 
+  /**
+   * Current Offset Top Value
+   */
+  private [__offsetTop] = 0;
+
+  /**
+   * Current Offset Bottom Value
+   */
+  private [__offsetBottom] = 0;
+
+  /**
+   * Sticky Web Component Constructor
+   */
   constructor() {
     super();
 
     const shadowDom = this.attachShadow({ mode: 'closed' });
+    const shadowDomContent = <HTMLElement>StickyComponent[__TEMPLATE_ELEMENT].content.cloneNode(true);
 
-    const shadowDomContent = StickyComponent[__TEMPLATE_ELEMENT].content.cloneNode(true);
-
-    this.container = <HTMLDivElement>(<HTMLElement>shadowDomContent).querySelector('div');
+    this.container = shadowDomContent.querySelector('div');
 
     shadowDom.appendChild(shadowDomContent);
   }
 
   /**
-   * Attribute change lifecycle callback
+   * [Lifecycle Callback] Attribute Change
+   *
+   * Runs when an observed attribute changes
+   *
    * @param name name of attribute
    * @param oldValue old value
    * @param newValue new value
@@ -105,16 +127,23 @@ export class StickyComponent extends HTMLElement {
     this._attributeChange$.next({name, value: newValue});
   }
 
+  /**
+   * [Lifecycle Callback] Connected
+   *
+   * Runs when component initialized
+   */
   public connectedCallback(): void {
-    const updateSubscription = this.position$.subscribe(event => {
+
+    // Main logic
+    this[__subscriptions].add(this.position$.subscribe(event => {
       switch (event) {
         case StickPosition.Above:  // Remove everything
           this.classList.remove('sticked');
-          this._resetStyles();
+          this._resetContainerStyles();
         break;
 
         case StickPosition.Below: // Make container absolute
-          this._resetStyles();
+          this._resetContainerStyles();
           this._setContainerSize();
 
           if (getComputedStyle(this).position === 'static') {
@@ -125,28 +154,45 @@ export class StickyComponent extends HTMLElement {
         break;
 
         case StickPosition.Sticked:
-          this._resetStyles();
+          this._resetContainerStyles();
           this._setContainerSize();
           this.container.style.setProperty('position', 'fixed');
           this.container.style.setProperty('top', "0");
         break;
       }
-    });
+    }));
 
-    this[__subscriptions].add(updateSubscription);
+    // Update offsetTop value
+    this[__subscriptions].add(this._offsetTop$.subscribe(value => {
+      this[__offsetTop] = value;
+    }));
 
-    console.log(this);
+    // Update offsetBottom value
+    this[__subscriptions].add(this._offsetBottom$.subscribe(value => {
+      this[__offsetBottom] = value;
+    }));
   }
 
+  /**
+   * [Lifecycle Callback] Disconnected
+   *
+   * Runs when component is destroyed
+   */
   public disconnectedCallback(): void {
     this[__subscriptions].unsubscribe();
   }
 
-  private _resetStyles() {
+  /**
+   * Reset Container Styles
+   */
+  private _resetContainerStyles() {
     this.container.classList.remove('at-bottom');
 		["position", "top", "bottom", "width", "height"].forEach(prop => this.container.style.removeProperty(prop));
   }
 
+  /**
+   * Update Container Size
+   */
   private _setContainerSize() {
     this.container.style.width = this.container.offsetWidth + "px";
     this.container.style.height = this.container.offsetHeight + "px";
